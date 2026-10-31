@@ -1,0 +1,111 @@
+---
+import { ClientRouter } from 'astro:transitions';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { site } from '../data/site';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description = site.description } = Astro.props;
+const fullTitle = title ? `${title} · ${site.name}` : `${site.name} · ${site.person}, sommelier de habanos en Colombia`;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL('/og.jpg', Astro.site);
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <meta name="theme-color" content="#0d0907" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_CO" />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@400;500;600&display=swap"
+    />
+
+    <script is:inline>
+      document.documentElement.classList.add('js');
+    </script>
+    <ClientRouter fallback="swap" />
+  </head>
+  <body>
+    <div class="ambience" aria-hidden="true" transition:persist="ambience"></div>
+    <canvas class="cigar" data-cigar aria-hidden="true" transition:persist="cigar"></canvas>
+    <div class="progress" aria-hidden="true"><span data-progress></span></div>
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <div class="grain" aria-hidden="true" transition:persist="grain"></div>
+    <style is:global>
+      .ambience {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background:
+          radial-gradient(60vmax 50vmax at 75% 30%, rgba(224, 101, 47, 0.13), transparent 60%),
+          radial-gradient(70vmax 60vmax at 10% 90%, rgba(201, 164, 92, 0.08), transparent 60%),
+          var(--bg);
+      }
+      .cigar {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100lvh;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 1.6s ease;
+      }
+      .cigar.is-ready {
+        opacity: var(--cigar-opacity, 1);
+        transition: opacity 0.5s ease;
+      }
+      main,
+      .footer {
+        position: relative;
+        z-index: 1;
+      }
+      .progress {
+        position: fixed;
+        inset: 0 0 auto;
+        height: 2px;
+        z-index: 45;
+        pointer-events: none;
+      }
+      .progress span {
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, var(--gold), var(--ember));
+        box-shadow: 0 0 12px var(--ember);
+        transform: scaleX(0);
+        transform-origin: left;
+      }
+    </style>
+    <script>
+      import '../scripts/motion';
+    </script>
+  </body>
+</html>

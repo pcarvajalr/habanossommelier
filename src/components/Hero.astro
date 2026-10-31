@@ -1,0 +1,99 @@
+---
+import { site } from '../data/site';
+---
+
+<section class="hero" data-scene="hero" aria-labelledby="hero-title">
+  <div class="wrap hero__inner">
+    <p class="eyebrow" data-reveal data-intro data-delay="0.1">Sommelier · Distribuidor exclusivo en Colombia</p>
+    <h1 id="hero-title" class="hero__title" data-split data-intro transition:name="page-title">
+      El arte<br /> del <em>habano</em>
+    </h1>
+    <p class="hero__sub" data-reveal data-intro data-delay="0.7">
+      {site.person}, {site.role.toLowerCase()}. Paciencia, origen y maestría artesanal en cada experiencia.
+    </p>
+    <div class="hero__cta" data-reveal data-intro data-delay="0.9">
+      <a class="btn btn--solid" href="/sobre-mi" data-magnetic>Conocer a {site.person}</a>
+      <a class="btn" href={site.instagram} target="_blank" rel="noopener" data-magnetic>Instagram</a>
+    </div>
+  </div>
+  <a href="#sobre-mi" class="hero__scroll" aria-label="Bajar a la presentación">
+    <span>Desliza</span>
+    <i></i>
+  </a>
+</section>
+
+<style>
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    display: grid;
+    align-items: center;
+    padding: 7rem 0 5rem;
+  }
+  .hero__inner {
+    display: grid;
+    gap: 1.4rem;
+  }
+  .hero__title {
+    font-size: clamp(3.6rem, 13vw, 10rem);
+    line-height: 0.92;
+    max-width: 9ch;
+  }
+  .hero__title :global(em) {
+    font-style: italic;
+    color: var(--gold-2);
+  }
+  .hero__sub {
+    max-width: 34ch;
+    color: var(--ink-dim);
+    font-size: clamp(1rem, 0.9rem + 0.4vw, 1.2rem);
+    margin: 0;
+  }
+  .hero__cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+    margin-top: 0.8rem;
+  }
+  .hero__scroll {
+    position: absolute;
+    left: 50%;
+    bottom: calc(1.5rem + env(safe-area-inset-bottom));
+    translate: -50% 0;
+    display: grid;
+    justify-items: center;
+    gap: 0.6rem;
+    text-decoration: none;
+    font-size: 0.65rem;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+  }
+  .hero__scroll i {
+    width: 1px;
+    height: 48px;
+    background: linear-gradient(var(--gold), transparent);
+    animation: drip 2.2s ease-in-out infinite;
+    transform-origin: top;
+  }
+  @keyframes drip {
+    0% { transform: scaleY(0); }
+    50% { transform: scaleY(1); transform-origin: top; }
+    51% { transform-origin: bottom; }
+    100% { transform: scaleY(0); transform-origin: bottom; }
+  }
+
+  /* En móvil el habano ocupa la parte alta y el texto va abajo */
+  @media (max-width: 860px) {
+    .hero {
+      align-items: end;
+      padding-bottom: 6.5rem;
+    }
+    .hero__inner {
+      gap: 1rem;
+    }
+    .hero__scroll {
+      display: none;
+    }
+  }
+</style>

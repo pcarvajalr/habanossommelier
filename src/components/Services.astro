@@ -1,0 +1,99 @@
+---
+import { services } from '../data/site';
+---
+
+<section id="servicios" class="services" data-scene="services" aria-labelledby="services-title">
+  <div class="wrap">
+    <div class="services__head">
+      <p class="eyebrow" data-reveal>Servicios</p>
+      <h2 id="services-title" class="services__title" data-split>Experiencias <em>a medida</em></h2>
+    </div>
+    <ul class="services__grid">
+      {
+        services.map((s, i) => (
+          <li class="card" data-tilt data-reveal data-delay={String((i % 2) * 0.1)}>
+            <span class="card__n">{s.n}</span>
+            <h3 class="card__t">{s.title}</h3>
+            <p class="card__p">{s.text}</p>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .services {
+    padding: clamp(6rem, 12vw, 10rem) 0;
+  }
+  .services__head {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: clamp(2.5rem, 6vw, 4.5rem);
+  }
+  .services__title {
+    font-size: clamp(2.6rem, 7vw, 5.5rem);
+  }
+  .services__title :global(em) {
+    color: var(--gold-2);
+  }
+  .services__grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    max-width: 800px;
+    perspective: 1000px;
+  }
+  .card {
+    --mx: 50%;
+    --my: 50%;
+    position: relative;
+    padding: clamp(1.5rem, 3vw, 2.4rem);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background:
+      radial-gradient(400px circle at var(--mx) var(--my), rgba(201, 164, 92, 0.12), transparent 50%),
+      linear-gradient(160deg, rgba(36, 25, 17, 0.85), rgba(16, 11, 8, 0.85));
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    transform-style: preserve-3d;
+    transition: border-color 0.4s ease;
+  }
+  .card:hover {
+    border-color: rgba(201, 164, 92, 0.55);
+  }
+  .card:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+  }
+  .card__n {
+    display: block;
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--gold);
+    font-size: 1.1rem;
+    margin-bottom: 2.4rem;
+    transform: translateZ(30px);
+  }
+  .card__t {
+    font-size: clamp(1.6rem, 1.3rem + 1vw, 2.1rem);
+    margin-bottom: 0.7rem;
+    transform: translateZ(40px);
+  }
+  .card__p {
+    color: var(--ink-dim);
+    margin: 0;
+    font-size: 0.95rem;
+    transform: translateZ(20px);
+  }
+  @media (max-width: 640px) {
+    .services__grid {
+      grid-template-columns: 1fr;
+    }
+    .card__n {
+      margin-bottom: 1.2rem;
+    }
+  }
+</style>
