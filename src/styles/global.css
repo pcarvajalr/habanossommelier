@@ -7,8 +7,8 @@
   --gold-2: #e6c88a;
   --ember: #e0652f;
   --line: rgba(201, 164, 92, 0.22);
-  --serif: 'Cormorant Garamond', 'Times New Roman', serif;
-  --sans: 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --serif: var(--font-serif, 'Cormorant Garamond', 'Times New Roman', serif);
+  --sans: var(--font-sans, 'Manrope', system-ui, -apple-system, 'Segoe UI', sans-serif);
   --gutter: clamp(1rem, 4vw, 3rem);
   --max: 1240px;
   color-scheme: dark;

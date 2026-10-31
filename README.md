@@ -59,3 +59,11 @@ Cada sección lleva `data-scene="nombre"`; el habano se mueve a la pose con ese 
 
 - Confirmar la lista de servicios.
 - Confirmar el permiso de las personas que aparecen junto a Alejandro en algunas fotos (evento en terraza y humidor).
+
+## SEO
+
+- Dominio canónico: en Vercel se usa el dominio de producción del proyecto (`VERCEL_PROJECT_PRODUCTION_URL`); fuera de Vercel, `SITE_URL` o `https://habanossommelier.com`.
+- `src/layouts/Base.astro`: título, descripción, canonical, Open Graph, Twitter y datos estructurados JSON-LD (`src/lib/schema.ts`: WebSite, ProfessionalService/LocalBusiness con servicios, Person y migas de pan).
+- `/sitemap.xml`, `/robots.txt` y `/site.webmanifest` se generan en `src/pages/`. Al añadir una página indexable, súmala a `src/pages/sitemap.xml.ts`.
+- Fuentes servidas desde el propio dominio con `fonts` de Astro (paquetes `@fontsource-variable`), con precarga y respaldo ajustado para evitar saltos de diseño.
+- En Google Search Console, envía `https://habanossommelier.com/sitemap.xml`.
