@@ -2,6 +2,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Lenis from 'lenis';
 import type { CigarScene, CigarState } from './cigar/scene';
+import type { FieldScene } from './field/scene';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -11,7 +12,7 @@ const finePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matc
 
 // ---------- Scroll suave (Lenis) sincronizado con GSAP ----------
 // En pantallas táctiles Lenis deja el scroll nativo: es lo más fluido en móvil.
-const lenis = reduced ? null : new Lenis({ anchors: { offset: -80 }, lerp: 0.1 });
+const lenis = reduced ? null : new Lenis({ lerp: 0.1 });
 if (lenis) {
   lenis.on('scroll', ScrollTrigger.update);
   gsap.ticker.add((t) => lenis.raf(t * 1000));
@@ -89,6 +90,40 @@ function loadScene() {
 }
 
 let hiddenSince = 0;
+// ---------- Vega de tabaco de fondo ----------
+let field: FieldScene | null = null;
+let fieldPromise: Promise<FieldScene | null> | null = null;
+const TRAVEL_PER_PX = 0.0045;
+let lastScrollY = window.scrollY;
+
+function loadField() {
+  if (fieldPromise) return fieldPromise;
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-field]');
+  if (!canvas) return Promise.resolve(null);
+  fieldPromise = (async () => {
+    try {
+      const { createFieldScene } = await import('./field/scene');
+      const f = await createFieldScene(canvas, { mobile: isMobile(), reducedMotion: reduced });
+      f.travel = window.scrollY * TRAVEL_PER_PX;
+      field = f;
+      canvas.classList.add('is-ready');
+      return f;
+    } catch (err) {
+      console.warn('Vega 3D no disponible', err);
+      return null;
+    }
+  })();
+  return fieldPromise;
+}
+
+/** Bajar avanza por la vega y subir retrocede; al cambiar de página se sigue desde donde iba. */
+function syncTravel() {
+  const y = window.scrollY;
+  if (field) field.travel += (y - lastScrollY) * TRAVEL_PER_PX;
+  lastScrollY = y;
+}
+window.addEventListener('scroll', syncTravel, { passive: true });
+
 const KEYS = ['x', 'y', 'scale', 'rx', 'ry', 'rz', 'glow', 'smoke'] as const;
 gsap.ticker.add((_, dt) => {
   if (!scene) return;
@@ -343,14 +378,53 @@ function teardown() {
 document.addEventListener('astro:page-load', () => {
   setup();
   // El 3D se carga después de pintar el contenido para no frenar la primera carga
-  const start = () => loadScene();
+  const start = () => {
+    loadField();
+    loadScene();
+  };
   if (scenePromise) start();
   else if ('requestIdleCallback' in window) requestIdleCallback(start, { timeout: 1500 });
   else setTimeout(start, 400);
 });
-document.addEventListener('astro:before-swap', teardown);
+document.addEventListener('astro:before-swap', () => {
+  teardown();
+  lastScrollY = 0;
+});
 document.addEventListener('astro:after-swap', () => {
-  if (!location.hash) lenis?.scrollTo(0, { immediate: true });
+  lenis?.scrollTo(0, { immediate: true });
+});
+
+// ---------- Enlaces a secciones (#contacto, #servicios…) ----------
+// En la misma página se desplaza con Lenis; si vienen de otra página, se espera a que
+// ScrollTrigger cree los espacios de las secciones fijadas antes de saltar.
+function scrollToHash(hash: string, immediate = false) {
+  const el = hash.length > 1 ? document.getElementById(decodeURIComponent(hash.slice(1))) : null;
+  if (!el) return false;
+  if (lenis) {
+    lenis.start(); // el menú móvil detiene Lenis mientras está abierto
+    lenis.scrollTo(el, { offset: -20, immediate, duration: 1.6, force: true });
+  }
+  else el.scrollIntoView({ behavior: immediate || reduced ? 'auto' : 'smooth' });
+  return true;
+}
+
+window.addEventListener(
+  'click',
+  (e) => {
+    const a = (e.target as Element | null)?.closest?.('a[href*="#"]') as HTMLAnchorElement | null;
+    if (!a || a.target === '_blank' || e.metaKey || e.ctrlKey || e.shiftKey) return;
+    const url = new URL(a.href, location.href);
+    if (url.origin !== location.origin || url.pathname !== location.pathname || !url.hash) return;
+    if (scrollToHash(url.hash)) {
+      e.preventDefault(); // el ClientRouter de Astro respeta esto y no navega
+      history.replaceState(history.state, '', url.hash);
+    }
+  },
+  true,
+);
+
+document.addEventListener('astro:page-load', () => {
+  if (location.hash) requestAnimationFrame(() => requestAnimationFrame(() => scrollToHash(location.hash, true)));
 });
 
 // La velocidad del scroll hace girar el habano sobre su eje

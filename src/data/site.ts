@@ -6,7 +6,13 @@ export const site = {
     'Alejandro, sommelier y representante y distribuidor exclusivo de habanos en Colombia. Asesorías, formación, consultoría gastronómica y maridajes excepcionales.',
   instagram: 'https://www.instagram.com/habanossommelier/',
   instagramHandle: '@habanossommelier',
+  whatsapp: '573174841911',
+  whatsappLabel: '+57 317 484 1911',
 };
+
+/** Enlace de WhatsApp con un mensaje ya escrito. */
+export const waLink = (text = 'Hola Alejandro, quiero más información.') =>
+  `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(text)}`;
 
 /** Texto unificado de presentación (inicio y "Sobre mí"). */
 export const bio = {
@@ -58,6 +64,6 @@ export const ritual = [
 
 export const stats = [
   { v: '+10', l: 'años en el sector del lujo' },
-  { v: 'CO', l: 'Representación y distribución exclusiva en Colombia' },
+  { v: 'COL', l: 'Representación y distribución exclusiva en Colombia' },
   { v: '100%', l: 'tabaco cubano' },
 ];

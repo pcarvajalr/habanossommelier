@@ -8,7 +8,7 @@ Web de Alejandro, sommelier y representante y distribuidor exclusivo de habanos 
 - View Transitions de Astro (`<ClientRouter />`) para navegar entre páginas sin recargar; el habano 3D persiste entre páginas.
 - [GSAP](https://gsap.com) + ScrollTrigger para las animaciones ligadas al scroll.
 - [Lenis](https://lenis.darkroom.engineering) para el scroll suave en escritorio (en táctil se usa el scroll nativo).
-- [Three.js](https://threejs.org) para el habano 3D, generado por código (sin modelos ni imágenes que descargar).
+- [Three.js](https://threejs.org) para el habano 3D (capa y ceniza texturizadas con fotos reales) y para el fondo: un recorrido por una vega de tabaco bajo el tapado que avanza con el scroll.
 
 ## Desarrollo
 
@@ -25,11 +25,13 @@ Requiere Node 22.23 o superior.
 
 | Ruta | Qué contiene |
 | --- | --- |
-| `src/data/site.ts` | Todos los textos: presentación, servicios, ritual, cifras e Instagram. Edita aquí el contenido. |
+| `src/data/site.ts` | Todos los textos: presentación, servicios, ritual, cifras, Instagram y WhatsApp. Edita aquí el contenido. |
 | `src/pages/` | `index` (inicio), `sobre-mi` y `404`. |
 | `src/components/` | Secciones de la página. |
 | `src/scripts/motion.ts` | Scroll suave, animaciones y la coreografía del habano por sección (`POSES`). |
 | `src/scripts/cigar/` | Escena 3D y texturas del habano (capa, anillo, ceniza, brasa, humo). |
+| `src/scripts/field/` | Vega de tabaco de fondo (plantas instanciadas, viento, tierra roja y tapado). |
+| `public/textures/` | Capa y ceniza del habano, sacadas de fotos reales. |
 | `src/assets/fotos/` | Fotos originales. Astro genera versiones AVIF/WebP en varios tamaños al compilar. |
 | `public/media/` | Video "La hoja" (comprimido, sin audio) y su imagen de portada. |
 | `public/og.jpg` | Imagen para compartir en redes (1200×630). |
@@ -45,6 +47,7 @@ Cada sección lleva `data-scene="nombre"`; el habano se mueve a la pose con ese 
 - Las fotos se sirven en AVIF/WebP al tamaño de cada pantalla y se cargan al acercarse.
 - El video solo se descarga cuando está a punto de verse, y nunca con el ahorro de datos activado.
 - Cuando el habano está oculto (secciones con fotos), la escena 3D deja de pintar.
+- La vega de fondo usa una sola llamada de dibujo para todas las hojas, niebla para ocultar lo lejano y menos plantas y resolución en móvil.
 
 ## Despliegue en Vercel
 
@@ -54,5 +57,5 @@ Cada sección lleva `data-scene="nombre"`; el habano se mueve a la pose con ese 
 
 ## Pendiente
 
-- Confirmar la lista de servicios y si se añade WhatsApp o correo de contacto.
+- Confirmar la lista de servicios.
 - Confirmar el permiso de las personas que aparecen junto a Alejandro en algunas fotos (evento en terraza y humidor).
