@@ -1,8 +1,8 @@
 // @ts-check
 import { defineConfig, fontProviders } from 'astro/config';
 
-// Dominio canónico (sin www). Se puede cambiar con la variable SITE_URL.
-const site = process.env.SITE_URL || 'https://habanossommelier.com';
+// Dominio canónico (con www; en Vercel el dominio sin www redirige aquí). Se puede cambiar con SITE_URL.
+const site = process.env.SITE_URL || 'https://www.habanossommelier.com';
 
 // Sitio estático: Vercel detecta Astro y publica `dist/` sin adaptador.
 export default defineConfig({
