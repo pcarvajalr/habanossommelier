@@ -4,6 +4,8 @@ import { Font } from 'astro:assets';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import WaFloat from '../components/WaFloat.astro';
+import Analytics from '@vercel/analytics/astro';
+import SpeedInsights from '@vercel/speed-insights/astro';
 import { site } from '../data/site';
 import { baseGraph } from '../lib/schema';
 import '../styles/global.css';
@@ -188,5 +190,9 @@ const jsonLd = {
     <script>
       import '../scripts/motion';
     </script>
+    <!-- Métricas de Vercel: visitas (Web Analytics) y rendimiento real (Speed Insights).
+         Van en el body para que cada navegación con transiciones cuente como visita. -->
+    <Analytics />
+    <SpeedInsights />
   </body>
 </html>
