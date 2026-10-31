@@ -62,7 +62,7 @@ Cada sección lleva `data-scene="nombre"`; el habano se mueve a la pose con ese 
 
 ## SEO
 
-- Dominio canónico: en Vercel se usa el dominio de producción del proyecto (`VERCEL_PROJECT_PRODUCTION_URL`); fuera de Vercel, `SITE_URL` o `https://habanossommelier.com`.
+- Dominio canónico: `https://habanossommelier.com` (sin www), configurable con `SITE_URL`. En Vercel, `www` debe redirigir al dominio sin www.
 - `src/layouts/Base.astro`: título, descripción, canonical, Open Graph, Twitter y datos estructurados JSON-LD (`src/lib/schema.ts`: WebSite, ProfessionalService/LocalBusiness con servicios, Person y migas de pan).
 - `/sitemap.xml`, `/robots.txt` y `/site.webmanifest` se generan en `src/pages/`. Al añadir una página indexable, súmala a `src/pages/sitemap.xml.ts`.
 - Fuentes servidas desde el propio dominio con `fonts` de Astro (paquetes `@fontsource-variable`), con precarga y respaldo ajustado para evitar saltos de diseño.
