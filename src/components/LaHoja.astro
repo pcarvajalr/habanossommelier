@@ -1,4 +1,5 @@
 ---
+import { waLink } from '../data/site';
 ---
 
 <section class="leaf" data-scene="leaf" aria-labelledby="leaf-title">
@@ -27,7 +28,14 @@
         Medio tiempo, seco, volado, capote y capa: cada hoja cumple una función dentro del habano. En mis cursos y catas
         descubrimos cómo el origen y la posición de la hoja en la planta definen la fuerza, el aroma y la combustión.
       </p>
-      <a class="btn" href="/#contacto" data-reveal data-magnetic>Quiero un curso</a>
+      <a
+        class="btn"
+        href={waLink('Hola Alejandro, quiero información sobre los cursos y catas de habanos.')}
+        target="_blank"
+        rel="noopener"
+        data-reveal
+        data-magnetic>Quiero un curso</a
+      >
     </div>
   </div>
 </section>

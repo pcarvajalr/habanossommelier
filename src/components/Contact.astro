@@ -1,5 +1,6 @@
 ---
-import { site } from '../data/site';
+import { site, waLink } from '../data/site';
+import WaIcon from './WaIcon.astro';
 ---
 
 <section id="contacto" class="contact" data-scene="contact" aria-labelledby="contact-title">
@@ -10,11 +11,14 @@ import { site } from '../data/site';
       Asesorías, cursos, catas privadas y eventos. Escríbeme y diseñamos juntos una experiencia a la altura de la ocasión.
     </p>
     <div class="contact__cta" data-reveal>
-      <a class="btn btn--solid" href={site.instagram} target="_blank" rel="noopener" data-magnetic>
-        Escríbeme por Instagram
+      <a class="btn btn--solid" href={waLink('Hola Alejandro, quiero reservar una experiencia.')} target="_blank" rel="noopener" data-magnetic>
+        <WaIcon size={18} /> Escríbeme por WhatsApp
       </a>
+      <a class="btn" href={site.instagram} target="_blank" rel="noopener" data-magnetic>Instagram</a>
     </div>
-    <p class="contact__handle" data-reveal>{site.instagramHandle}</p>
+    <p class="contact__handle" data-reveal>
+      <a href={waLink()} target="_blank" rel="noopener">{site.whatsappLabel}</a> · {site.instagramHandle}
+    </p>
   </div>
 </section>
 
@@ -45,6 +49,13 @@ import { site } from '../data/site';
   }
   .contact__cta {
     margin-top: 0.6rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.8rem;
+  }
+  .contact__handle a {
+    color: inherit;
+    text-decoration: none;
   }
   .contact__handle {
     font-family: var(--serif);

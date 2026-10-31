@@ -13,22 +13,25 @@ import {
   LatheGeometry,
   Mesh,
   MeshBasicMaterial,
+  MeshPhysicalMaterial,
   MeshStandardMaterial,
   PerspectiveCamera,
   PMREMGenerator,
   PointLight,
+  RepeatWrapping,
   Points,
   Scene,
   ShaderMaterial,
   SRGBColorSpace,
   Timer,
+  TextureLoader,
   TorusGeometry,
   Vector2,
   Vector3,
   WebGLRenderer,
 } from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
-import { ashTexture, bandTexture, emberTexture, wrapperTextures } from './textures';
+import { bandTextures, charTexture, emberTexture } from './textures';
 
 /** Estado que GSAP anima con el scroll. x/y van normalizados al ancho/alto visibles (-1..1). */
 export interface CigarState {
@@ -51,28 +54,57 @@ export interface CigarScene {
   destroy(): void;
 }
 
-const LENGTH = 5.2;
-const RADIUS = 0.3;
+const LENGTH = 5;
+const RADIUS = 0.37;
 
 function cigarProfile(steps: number) {
   const pts: Vector2[] = [];
   const foot = -LENGTH / 2;
-  const headStart = LENGTH / 2 - 0.55;
+  const headLen = 0.5;
+  const headStart = LENGTH / 2 - headLen;
   pts.push(new Vector2(0.0001, foot));
-  pts.push(new Vector2(RADIUS * 0.97, foot));
-  pts.push(new Vector2(RADIUS, foot + 0.02));
+  pts.push(new Vector2(RADIUS * 0.96, foot));
+  pts.push(new Vector2(RADIUS, foot + 0.015));
   for (let i = 1; i <= steps; i++) {
-    const y = foot + 0.02 + ((headStart - foot - 0.02) * i) / steps;
-    // Ligera curvatura del cuerpo, como un habano torcido a mano
-    const t = i / steps;
-    pts.push(new Vector2(RADIUS * (1 + 0.012 * Math.sin(t * Math.PI)), y));
+    const y = foot + 0.015 + ((headStart - foot - 0.015) * i) / steps;
+    pts.push(new Vector2(RADIUS, y));
   }
-  // Perilla redondeada
-  for (let i = 1; i <= 12; i++) {
-    const a = (i / 12) * (Math.PI / 2);
-    pts.push(new Vector2(Math.max(0.0001, RADIUS * Math.cos(a)), headStart + 0.55 * Math.sin(a)));
+  // Perilla: casquete algo aplanado, como una perilla de tres capas
+  for (let i = 1; i <= 14; i++) {
+    const a = (i / 14) * (Math.PI / 2);
+    pts.push(new Vector2(Math.max(0.0001, RADIUS * Math.cos(a)), headStart + headLen * Math.pow(Math.sin(a), 0.85)));
   }
   return pts;
+}
+
+/** Pequeñas irregularidades de un habano torcido a mano (no es un cilindro perfecto). */
+function handRolled(geo: BufferGeometry, amount: number) {
+  const p = geo.attributes.position as BufferAttribute;
+  for (let i = 0; i < p.count; i++) {
+    const x = p.getX(i);
+    const y = p.getY(i);
+    const z = p.getZ(i);
+    const r = Math.hypot(x, z);
+    if (r < 1e-3) continue;
+    const a = Math.atan2(z, x);
+    const k =
+      1 +
+      amount *
+        (Math.sin(y * 3.1 + a * 2) * 0.5 + Math.sin(y * 7.3 - a * 3 + 1.7) * 0.3 + Math.sin(a * 5 + y * 1.3) * 0.2);
+    p.setX(i, x * k);
+    p.setZ(i, z * k);
+  }
+  geo.computeVertexNormals();
+  return geo;
+}
+
+function loadTexture(loader: TextureLoader, url: string, srgb: boolean) {
+  return loader.loadAsync(url).then((t) => {
+    if (srgb) t.colorSpace = SRGBColorSpace;
+    t.wrapS = t.wrapT = RepeatWrapping;
+    t.anisotropy = 8;
+    return t;
+  });
 }
 
 export async function createCigarScene(canvas: HTMLCanvasElement, opts: { mobile: boolean; reducedMotion: boolean }): Promise<CigarScene> {
@@ -101,7 +133,7 @@ export async function createCigarScene(canvas: HTMLCanvasElement, opts: { mobile
 
   // Luces cálidas de salón de fumadores
   scene.add(new AmbientLight(0xffe6c8, 0.25));
-  const key = new DirectionalLight(0xffd9a8, 2.4);
+  const key = new DirectionalLight(0xffd9a8, 2);
   key.position.set(-4, 5, 6);
   scene.add(key);
   const rim = new DirectionalLight(0xc9a45c, 3);
@@ -116,52 +148,84 @@ export async function createCigarScene(canvas: HTMLCanvasElement, opts: { mobile
   tilt.add(cigar);
   scene.add(root);
 
-  const tex = wrapperTextures(mobile ? 1024 : 2048);
-  tex.map.repeat.set(1, 3);
-  tex.bump.repeat.set(1, 3);
+  // Capa y ceniza sacadas de fotos reales de habanos
+  const loader = new TextureLoader();
+  const [capa, relieve, ceniza] = await Promise.all([
+    loadTexture(loader, '/textures/capa.jpg', true),
+    loadTexture(loader, '/textures/capa-relieve.jpg', false),
+    loadTexture(loader, '/textures/ceniza.jpg', true),
+  ]);
+  capa.repeat.set(1, 1.3);
+  relieve.repeat.copy(capa.repeat);
+
   const body = new Mesh(
-    new LatheGeometry(cigarProfile(mobile ? 24 : 48), mobile ? 48 : 96),
-    new MeshStandardMaterial({
-      map: tex.map,
-      bumpMap: tex.bump,
-      bumpScale: 1.2,
+    handRolled(new LatheGeometry(cigarProfile(mobile ? 40 : 80), mobile ? 64 : 128), 0.012),
+    new MeshPhysicalMaterial({
+      map: capa,
+      bumpMap: relieve,
+      bumpScale: 0.18,
       roughness: 0.62,
       metalness: 0,
-      envMapIntensity: 0.6,
+      sheen: 0.2,
+      sheenColor: new Color(0xd9a26a),
+      sheenRoughness: 0.45,
+      envMapIntensity: 0.55,
     }),
   );
   cigar.add(body);
+  // El material físico deja un alfa menor que 1 y el habano se transparentaba sobre la vega
+  (body.material as MeshPhysicalMaterial).onBeforeCompile = (sh) => {
+    sh.fragmentShader = sh.fragmentShader.replace('#include <dithering_fragment>', '#include <dithering_fragment>\n gl_FragColor.a = 1.0;');
+  };
 
+  const bandMaps = bandTextures();
   const band = new Mesh(
-    new CylinderGeometry(RADIUS * 1.018, RADIUS * 1.018, 0.62, mobile ? 48 : 96, 1, true),
-    new MeshStandardMaterial({ map: bandTexture(), roughness: 0.32, metalness: 0.45, envMapIntensity: 1.2 }),
+    new CylinderGeometry(RADIUS * 1.012, RADIUS * 1.012, 0.56, mobile ? 64 : 128, 1, true),
+    new MeshStandardMaterial({
+      map: bandMaps.map,
+      metalnessMap: bandMaps.metal,
+      roughnessMap: bandMaps.metal,
+      metalness: 1,
+      roughness: 1,
+      bumpMap: bandMaps.bump,
+      bumpScale: 1.5,
+      envMapIntensity: 0.7,
+    }),
   );
-  band.position.y = LENGTH / 2 - 1.15;
+  band.position.y = LENGTH / 2 - 1.05;
+  band.rotation.y = -Math.PI / 2; // medallón hacia la cámara al inicio
   cigar.add(band);
 
-  // Ceniza y brasa en el pie
-  const ashLen = 0.42;
-  const ash = new Mesh(
-    new CylinderGeometry(RADIUS * 0.97, RADIUS * 0.95, ashLen, mobile ? 32 : 64, 1, false),
-    new MeshStandardMaterial({ map: ashTexture(), roughness: 1, metalness: 0 }),
+  // Pie encendido: capa quemada, ceniza firme y brasa
+  const ashLen = 0.55;
+  const footY = -LENGTH / 2;
+  const char = new Mesh(
+    new CylinderGeometry(RADIUS * 1.004, RADIUS * 1.004, 0.4, mobile ? 64 : 128, 1, true),
+    new MeshStandardMaterial({ map: charTexture(), transparent: true, depthWrite: false, roughness: 0.9 }),
   );
-  ash.position.y = -LENGTH / 2 - ashLen / 2 + 0.01;
+  char.position.y = footY + 0.2;
+  cigar.add(char);
+
+  ceniza.repeat.set(1, 1);
+  const ashGeo = handRolled(new CylinderGeometry(RADIUS * 0.985, RADIUS * 0.93, ashLen, mobile ? 40 : 72, 8, false), 0.035);
+  const ash = new Mesh(ashGeo, new MeshStandardMaterial({ map: ceniza, bumpMap: ceniza, color: 0xb8b2aa, bumpScale: 2, roughness: 1, metalness: 0, envMapIntensity: 0.3 }));
+  ash.position.y = footY - ashLen / 2 + 0.01;
   cigar.add(ash);
 
-  const emberMat = new MeshBasicMaterial({ color: new Color(1.6, 0.55, 0.18), transparent: true, opacity: 0.9, toneMapped: false });
-  const ember = new Mesh(new TorusGeometry(RADIUS * 0.985, 0.022, 8, mobile ? 48 : 96), emberMat);
+  const emberMat = new MeshBasicMaterial({ color: new Color(1.5, 0.45, 0.12), transparent: true, opacity: 0.8, toneMapped: false });
+  const ember = new Mesh(new TorusGeometry(RADIUS * 0.975, 0.014, 6, mobile ? 64 : 128), emberMat);
   ember.rotation.x = Math.PI / 2;
-  ember.position.y = -LENGTH / 2 + 0.005;
+  ember.position.y = footY - 0.005;
   cigar.add(ember);
 
-  const tipMat = new MeshBasicMaterial({ map: emberTexture(), transparent: true, opacity: 0.55, toneMapped: false, side: DoubleSide });
-  const tip = new Mesh(new CircleGeometry(RADIUS * 0.94, 48), tipMat);
+  const tipMat = new MeshBasicMaterial({ map: emberTexture(), transparent: true, opacity: 0.4, toneMapped: false, side: DoubleSide });
+  const tip = new Mesh(new CircleGeometry(RADIUS * 0.9, 48), tipMat);
   tip.rotation.x = Math.PI / 2;
-  tip.position.y = -LENGTH / 2 - ashLen + 0.005;
+  tip.position.y = footY - ashLen + 0.004;
   cigar.add(tip);
 
   const glowLight = new PointLight(0xff6a24, 3, 3.5, 1.6);
-  glowLight.position.y = -LENGTH / 2 - 0.1;
+  glowLight.position.y = footY - 0.1;
   cigar.add(glowLight);
 
   // ---- Humo ----
@@ -281,7 +345,7 @@ export async function createCigarScene(canvas: HTMLCanvasElement, opts: { mobile
 
     // Partículas de humo desde la ceniza, en coordenadas de la escena
     if (COUNT) {
-      tipWorld.set(0, -LENGTH / 2 - ashLen, 0);
+      tipWorld.set(0, footY - ashLen, 0);
       cigar.localToWorld(tipWorld);
       spawnAcc += dt * COUNT * 0.18;
       while (spawnAcc > 1) {

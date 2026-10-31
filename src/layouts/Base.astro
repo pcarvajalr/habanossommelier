@@ -2,6 +2,7 @@
 import { ClientRouter } from 'astro:transitions';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
+import WaFloat from '../components/WaFloat.astro';
 import { site } from '../data/site';
 import '../styles/global.css';
 
@@ -50,6 +51,8 @@ const ogImage = new URL('/og.jpg', Astro.site);
   </head>
   <body>
     <div class="ambience" aria-hidden="true" transition:persist="ambience"></div>
+    <canvas class="field" data-field aria-hidden="true" transition:persist="field"></canvas>
+    <div class="veil" aria-hidden="true" transition:persist="veil"></div>
     <canvas class="cigar" data-cigar aria-hidden="true" transition:persist="cigar"></canvas>
     <div class="progress" aria-hidden="true"><span data-progress></span></div>
     <Header />
@@ -57,6 +60,7 @@ const ogImage = new URL('/og.jpg', Astro.site);
       <slot />
     </main>
     <Footer />
+    <div transition:persist="wa"><WaFloat /></div>
     <div class="grain" aria-hidden="true" transition:persist="grain"></div>
     <style is:global>
       .ambience {
@@ -68,6 +72,35 @@ const ogImage = new URL('/og.jpg', Astro.site);
           radial-gradient(60vmax 50vmax at 75% 30%, rgba(224, 101, 47, 0.13), transparent 60%),
           radial-gradient(70vmax 60vmax at 10% 90%, rgba(201, 164, 92, 0.08), transparent 60%),
           var(--bg);
+      }
+      /* Vega de tabaco al fondo, tras un velo oscuro que mantiene el texto legible */
+      .field {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100lvh;
+        z-index: 0;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 2.4s ease;
+      }
+      .field.is-ready {
+        opacity: 0.9;
+      }
+      .veil {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background:
+          linear-gradient(90deg, rgba(13, 9, 7, 0.82) 0%, rgba(13, 9, 7, 0.45) 55%, rgba(13, 9, 7, 0.3) 100%),
+          linear-gradient(180deg, rgba(13, 9, 7, 0.55) 0%, transparent 30%, transparent 70%, rgba(13, 9, 7, 0.75) 100%);
+      }
+      @media (max-width: 860px) {
+        .veil {
+          background:
+            linear-gradient(180deg, rgba(13, 9, 7, 0.45) 0%, rgba(13, 9, 7, 0.55) 45%, rgba(13, 9, 7, 0.85) 100%);
+        }
       }
       .cigar {
         position: fixed;

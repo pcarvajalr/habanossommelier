@@ -1,5 +1,5 @@
 ---
-import { site } from '../data/site';
+import { site, waLink } from '../data/site';
 const path = Astro.url.pathname.replace(/\/$/, '') || '/';
 const links = [
   { href: '/', label: 'Inicio' },
@@ -35,7 +35,10 @@ const links = [
           ))
         }
       </ul>
-      <a class="nav__ig" href={site.instagram} target="_blank" rel="noopener">{site.instagramHandle}</a>
+      <div class="nav__social">
+        <a class="nav__ig" href={waLink()} target="_blank" rel="noopener">WhatsApp</a>
+        <a class="nav__ig" href={site.instagram} target="_blank" rel="noopener">{site.instagramHandle}</a>
+      </div>
     </nav>
   </div>
 </header>
@@ -130,6 +133,15 @@ const links = [
   }
   .nav__ig {
     color: var(--gold) !important;
+  }
+  .nav__social {
+    display: flex;
+    gap: 1.5rem;
+  }
+  @media (max-width: 1100px) and (min-width: 861px) {
+    .nav__social a:first-child {
+      display: none;
+    }
   }
 
   .burger {
