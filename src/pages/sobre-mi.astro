@@ -5,6 +5,16 @@ import Gallery from '../components/Gallery.astro';
 import Photo from '../components/Photo.astro';
 import retrato from '../assets/fotos/retrato-fumando.jpg';
 import { bio, site } from '../data/site';
+import { breadcrumbs } from '../lib/schema';
+
+const description =
+  'Conoce a Alejandro: sommelier con más de diez años en el sector del lujo y representante y distribuidor exclusivo de habanos en Colombia. Formación, catas y maridajes.';
+const schema = [
+  breadcrumbs(Astro.site!, [
+    { name: 'Inicio', path: '/' },
+    { name: 'Sobre mí', path: '/sobre-mi' },
+  ]),
+];
 
 const values = [
   { k: 'Paciencia', t: 'El tiempo es un ingrediente: en la guarda, en la cata y en cada conversación.' },
@@ -14,7 +24,7 @@ const values = [
 ];
 ---
 
-<Base title="Sobre mí" description={`${site.person}, ${site.role.toLowerCase()}. ${bio.paragraphs[0]}`}>
+<Base title={`Sobre mí: ${site.person}, sommelier de habanos`} description={description} pageType="ProfilePage" schema={schema}>
   <section class="bio" data-scene="bio" aria-labelledby="bio-title">
     <div class="wrap bio__grid">
     <div class="bio__inner">

@@ -8,6 +8,16 @@ export const site = {
   instagramHandle: '@habanossommelier',
   whatsapp: '573174841911',
   whatsappLabel: '+57 317 484 1911',
+  /** Teléfono en formato internacional para datos estructurados. */
+  phone: '+57 317 484 1911',
+  country: 'CO',
+  countryName: 'Colombia',
+  locale: 'es_CO',
+  lang: 'es-CO',
+  /** Imagen para compartir en redes (en public/). */
+  ogImage: { src: '/og.jpg', width: 1200, height: 630, alt: 'Habanos Sommelier, Alejandro, sommelier de habanos en Colombia' },
+  /** Temas que se declaran como especialidad en los datos estructurados. */
+  knowsAbout: ['Habanos', 'Tabaco cubano', 'Sommelier', 'Cata de habanos', 'Maridaje', 'Vinos', 'Rones', 'Destilados', 'Alta gastronomía'],
 };
 
 /** Enlace de WhatsApp con un mensaje ya escrito. */
