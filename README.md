@@ -1,3 +1,58 @@
 # Habanos Sommelier
 
-Web de Alejandro, sommelier y distribuidor exclusivo de habanos en Colombia ([@habanossommelier](https://instagram.com/habanossommelier)).
+Web de Alejandro, sommelier y representante y distribuidor exclusivo de habanos en Colombia ([@habanossommelier](https://www.instagram.com/habanossommelier/)).
+
+## Stack
+
+- [Astro](https://astro.build) 7, sitio estático.
+- View Transitions de Astro (`<ClientRouter />`) para navegar entre páginas sin recargar; el habano 3D persiste entre páginas.
+- [GSAP](https://gsap.com) + ScrollTrigger para las animaciones ligadas al scroll.
+- [Lenis](https://lenis.darkroom.engineering) para el scroll suave en escritorio (en táctil se usa el scroll nativo).
+- [Three.js](https://threejs.org) para el habano 3D, generado por código (sin modelos ni imágenes que descargar).
+
+## Desarrollo
+
+```sh
+npm install
+npm run dev      # http://localhost:4321
+npm run build    # genera dist/
+npm run preview
+```
+
+Requiere Node 22.23 o superior.
+
+## Estructura
+
+| Ruta | Qué contiene |
+| --- | --- |
+| `src/data/site.ts` | Todos los textos: presentación, servicios, ritual, cifras e Instagram. Edita aquí el contenido. |
+| `src/pages/` | `index` (inicio), `sobre-mi` y `404`. |
+| `src/components/` | Secciones de la página. |
+| `src/scripts/motion.ts` | Scroll suave, animaciones y la coreografía del habano por sección (`POSES`). |
+| `src/scripts/cigar/` | Escena 3D y texturas del habano (capa, anillo, ceniza, brasa, humo). |
+| `src/assets/fotos/` | Fotos originales. Astro genera versiones AVIF/WebP en varios tamaños al compilar. |
+| `public/media/` | Video "La hoja" (comprimido, sin audio) y su imagen de portada. |
+| `public/og.jpg` | Imagen para compartir en redes (1200×630). |
+
+Cada sección lleva `data-scene="nombre"`; el habano se mueve a la pose con ese nombre en `POSES` (una para escritorio y otra para móvil).
+
+## Rendimiento en móvil
+
+- El JS inicial pesa unos 58 KB comprimido. Three.js (unos 137 KB) se carga después de pintar la página, en un momento de inactividad.
+- En móvil la escena usa menos geometría, texturas más pequeñas, menos humo y una densidad de píxeles limitada a 1,5.
+- Con "reducir movimiento" activado en el sistema se desactivan el scroll suave, el humo y las animaciones.
+- Si el dispositivo no tiene WebGL, la web funciona igual con el fondo cálido en CSS.
+- Las fotos se sirven en AVIF/WebP al tamaño de cada pantalla y se cargan al acercarse.
+- El video solo se descarga cuando está a punto de verse, y nunca con el ahorro de datos activado.
+- Cuando el habano está oculto (secciones con fotos), la escena 3D deja de pintar.
+
+## Despliegue en Vercel
+
+1. En [vercel.com/new](https://vercel.com/new), importa el repositorio `pcarvajalr/habanossommelier`.
+2. Vercel detecta Astro solo: no hay que cambiar nada (build `npm run build`, salida `dist`).
+3. Cuando tengas dominio, añádelo en *Settings → Domains* y actualiza `site` en `astro.config.mjs`.
+
+## Pendiente
+
+- Confirmar la lista de servicios y si se añade WhatsApp o correo de contacto.
+- Confirmar el permiso de las personas que aparecen junto a Alejandro en algunas fotos (evento en terraza y humidor).

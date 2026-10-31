@@ -1,0 +1,45 @@
+---
+const words = ['Habanos', 'Vinos', 'Destilados', 'Maridajes', 'Formación', 'Alta gastronomía'];
+const row = [...words, ...words];
+---
+
+<div class="marquee" aria-hidden="true">
+  <div class="marquee__track">
+    {row.map((w) => <span>{w}<i>✦</i></span>)}
+  </div>
+</div>
+
+<style>
+  .marquee {
+    overflow: hidden;
+    border-block: 1px solid var(--line);
+    padding: 1.1rem 0;
+    background: rgba(13, 9, 7, 0.5);
+    -webkit-mask: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+    mask: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent);
+  }
+  .marquee__track {
+    display: flex;
+    width: max-content;
+    animation: marquee 38s linear infinite;
+  }
+  .marquee span {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(1.6rem, 4vw, 3rem);
+    color: var(--ink);
+    white-space: nowrap;
+    padding-right: 2.2rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 2.2rem;
+  }
+  .marquee i {
+    font-style: normal;
+    font-size: 0.5em;
+    color: var(--gold);
+  }
+  @keyframes marquee {
+    to { transform: translateX(-50%); }
+  }
+</style>

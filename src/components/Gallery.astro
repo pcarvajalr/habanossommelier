@@ -1,0 +1,155 @@
+---
+import type { ImageMetadata } from 'astro';
+import Photo from './Photo.astro';
+import vegaAgachado from '../assets/fotos/vega-agachado.jpg';
+import plantula from '../assets/fotos/plantula.jpg';
+import vega from '../assets/fotos/vega.jpg';
+import retratoCampo from '../assets/fotos/retrato-campo.jpg';
+import tabacuba from '../assets/fotos/tabacuba.jpg';
+import torcido from '../assets/fotos/torcido.jpg';
+import cajas from '../assets/fotos/cajas-firmadas.jpg';
+import examinando from '../assets/fotos/examinando-habano.jpg';
+import humidor from '../assets/fotos/humidor.jpg';
+import evento from '../assets/fotos/evento-terraza.jpg';
+import tres from '../assets/fotos/tres-habanos.jpg';
+import cohiba from '../assets/fotos/cohiba-mano.jpg';
+import sillon from '../assets/fotos/sillon.jpg';
+import humo from '../assets/fotos/humo-perfil.jpg';
+import habano from '../assets/fotos/habano-mano.jpg';
+
+type Item = { src: ImageMetadata; alt: string; cap: string; ratio: string; pos?: string };
+
+// Tres columnas que avanzan a distinto ritmo: del campo, al taller, a la mesa.
+const columns: { speed: number; items: Item[] }[] = [
+  {
+    speed: -4,
+    items: [
+      { src: vegaAgachado, alt: 'Alejandro agachado entre surcos de tabaco bajo el tapado', cap: 'En la vega', ratio: '1 / 1', pos: '45% 50%' },
+      { src: plantula, alt: 'Mano sosteniendo una plántula de tabaco en un semillero', cap: 'Donde empieza todo', ratio: '3 / 4', pos: '50% 40%' },
+      { src: tabacuba, alt: 'Puerta de una sede de Tabacuba en La Habana', cap: 'La Habana', ratio: '4 / 5', pos: '50% 35%' },
+      { src: cajas, alt: 'Pared cubierta de cajas de habanos firmadas por visitantes', cap: 'Cajas con historia', ratio: '4 / 5' },
+      { src: evento, alt: 'Alejandro presenta una selección de habanos a dos invitados en una terraza', cap: 'Asesoría en mesa', ratio: '4 / 5', pos: '35% 50%' },
+    ],
+  },
+  {
+    speed: 6,
+    items: [
+      { src: retratoCampo, alt: 'Retrato de Alejandro fumando con un campo de tabaco y montañas al fondo', cap: 'Origen', ratio: '3 / 4', pos: '50% 25%' },
+      { src: torcido, alt: 'Alejandro revisa una hoja de capa en la mesa de un torcedor', cap: 'Mesa de torcido', ratio: '4 / 5' },
+      { src: examinando, alt: 'Alejandro examina un habano con atención', cap: 'Lectura de la capa', ratio: '4 / 5', pos: '55% 40%' },
+      { src: humo, alt: 'Primer plano de Alejandro fumando un habano', cap: 'El primer humo', ratio: '1 / 1', pos: '35% 50%' },
+      { src: tres, alt: 'Tres habanos sostenidos en la mano contra el cielo', cap: 'Selección del día', ratio: '4 / 5' },
+    ],
+  },
+  {
+    speed: -6,
+    items: [
+      { src: vega, alt: 'Plantas de tabaco bajo una malla de sombra sobre tierra roja', cap: 'Tabaco tapado', ratio: '4 / 5' },
+      { src: humidor, alt: 'Entrega de un certificado dentro de un humidor de madera', cap: 'Humidor', ratio: '3 / 4', pos: '50% 55%' },
+      { src: cohiba, alt: 'Mano sosteniendo un habano encendido sobre fondo dorado', cap: 'Ceniza firme', ratio: '4 / 5' },
+      { src: sillon, alt: 'Alejandro fumando un habano en un sillón de cuero', cap: 'Pausa', ratio: '3 / 4', pos: '50% 30%' },
+      { src: habano, alt: 'Habano en la mano junto a cócteles', cap: 'Maridaje', ratio: '4 / 5' },
+    ],
+  },
+];
+---
+
+<section class="gallery" data-scene="gallery" aria-labelledby="gallery-title">
+  <div class="wrap">
+    <div class="gallery__head">
+      <p class="eyebrow" data-reveal>Trayectoria</p>
+      <h2 id="gallery-title" class="gallery__title" data-split>Del campo <em>a la copa</em></h2>
+      <p class="gallery__p" data-reveal>
+        Las vegas de Cuba, las mesas de torcido, el humidor y la sobremesa. Un recorrido por los lugares donde nace y se
+        disfruta cada habano.
+      </p>
+    </div>
+    <div class="gallery__cols">
+      {
+        columns.map((col, c) => (
+          <div class="gallery__col" data-col-speed={col.speed} style={`--c:${c}`}>
+            {col.items.map((it) => (
+              <Photo src={it.src} alt={it.alt} ratio={it.ratio} position={it.pos} parallax={0} sizes="(max-width: 640px) 46vw, (max-width: 1240px) 31vw, 400px" widths={[320, 480, 720, 960]}>
+                <figcaption class="gallery__cap">{it.cap}</figcaption>
+              </Photo>
+            ))}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .gallery {
+    padding: clamp(5rem, 10vw, 8rem) 0;
+    overflow: hidden;
+  }
+  .gallery__head {
+    display: grid;
+    gap: 1rem;
+    max-width: 640px;
+    margin-bottom: clamp(3rem, 6vw, 5rem);
+  }
+  .gallery__title {
+    font-size: clamp(2.8rem, 8vw, 6rem);
+  }
+  .gallery__title :global(em) {
+    color: var(--gold-2);
+  }
+  .gallery__p {
+    color: var(--ink-dim);
+    margin: 0;
+  }
+  .gallery__cols {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+    align-items: start;
+  }
+  .gallery__col {
+    display: grid;
+    gap: clamp(0.75rem, 2vw, 1.5rem);
+  }
+  .gallery__col:nth-child(2) {
+    margin-top: 6rem;
+  }
+  .gallery__cap {
+    position: absolute;
+    left: 0.9rem;
+    bottom: 0.8rem;
+    z-index: 1;
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(0.95rem, 0.8rem + 0.5vw, 1.25rem);
+    color: var(--ink);
+    text-shadow: 0 1px 12px rgba(0, 0, 0, 0.7);
+  }
+  .gallery :global(.photo) {
+    transition: transform 0.8s cubic-bezier(0.2, 0, 0, 1);
+  }
+  @media (hover: hover) {
+    .gallery :global(.photo:hover) {
+      transform: scale(0.98);
+    }
+    .gallery :global(.photo img) {
+      transition: transform 1.2s cubic-bezier(0.2, 0, 0, 1);
+    }
+    .gallery :global(.photo:hover img) {
+      transform: scale(1.06);
+    }
+  }
+  /* Móvil: dos columnas; la tercera se reparte entre ambas */
+  @media (max-width: 640px) {
+    .gallery__cols {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .gallery__col:nth-child(2) {
+      margin-top: 3rem;
+    }
+    .gallery__col:nth-child(3) {
+      grid-column: 1 / -1;
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

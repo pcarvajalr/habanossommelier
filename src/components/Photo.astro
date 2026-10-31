@@ -1,0 +1,72 @@
+---
+import { Picture } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src: ImageMetadata;
+  alt: string;
+  sizes: string;
+  widths?: number[];
+  /** Encuadre dentro del marco, por ejemplo "50% 30%". */
+  position?: string;
+  ratio?: string;
+  parallax?: number;
+  eager?: boolean;
+  class?: string;
+}
+
+const { src, alt, sizes, widths = [360, 640, 960, 1400], position = '50% 50%', ratio, parallax = 8, eager = false, class: cls } = Astro.props;
+const usable = widths.filter((w) => w <= src.width);
+if (!usable.length) usable.push(src.width);
+---
+
+<figure class:list={['photo', cls]} style={`--pos:${position};${ratio ? `aspect-ratio:${ratio};` : ''}`} data-clip>
+  <div class:list={['photo__inner', { 'photo__inner--still': !parallax }]} data-parallax={parallax || undefined}>
+    <Picture
+      src={src}
+      alt={alt}
+      widths={usable}
+      sizes={sizes}
+      formats={['avif', 'webp']}
+      loading={eager ? 'eager' : 'lazy'}
+      fetchpriority={eager ? 'high' : undefined}
+      decoding="async"
+    />
+  </div>
+  <slot />
+</figure>
+
+<style>
+  .photo {
+    position: relative;
+    margin: 0;
+    overflow: hidden;
+    border-radius: 14px;
+    background: #1d1510;
+  }
+  .photo__inner {
+    position: absolute;
+    inset: -10% 0;
+  }
+  .photo__inner--still {
+    inset: 0;
+  }
+  .photo :global(picture) {
+    display: contents;
+  }
+  .photo :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--pos);
+  }
+  .photo::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    box-shadow: inset 0 0 0 1px var(--line);
+    border-radius: inherit;
+    background: linear-gradient(180deg, transparent 60%, rgba(13, 9, 7, 0.35));
+  }
+</style>

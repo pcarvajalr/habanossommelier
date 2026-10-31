@@ -1,0 +1,70 @@
+---
+import { stats } from '../data/site';
+const parse = (v: string) => {
+  const m = v.match(/^(\D*)(\d+)(\D*)$/);
+  return m ? { prefix: m[1], n: m[2], suffix: m[3] } : null;
+};
+---
+
+<section class="stats" aria-label="Trayectoria">
+  <div class="wrap stats__grid">
+    {
+      stats.map((s, i) => {
+        const p = parse(s.v);
+        return (
+          <div class="stat" data-reveal data-delay={String(i * 0.12)}>
+            <span class="stat__v" data-count={p?.n} data-prefix={p?.prefix} data-suffix={p?.suffix}>
+              {s.v}
+            </span>
+            <span class="stat__l">{s.l}</span>
+          </div>
+        );
+      })
+    }
+  </div>
+</section>
+
+<style>
+  .stats {
+    padding: 2rem 0 clamp(5rem, 10vw, 8rem);
+  }
+  .stats__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+  .stat {
+    display: grid;
+    gap: 0.4rem;
+    padding: 1.6rem 0;
+    border-top: 1px solid var(--line);
+  }
+  .stat__v {
+    font-family: var(--serif);
+    font-size: clamp(3rem, 8vw, 6rem);
+    line-height: 1;
+    color: var(--gold-2);
+  }
+  .stat__l {
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    max-width: 22ch;
+  }
+  @media (max-width: 640px) {
+    .stats__grid {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+    .stat {
+      grid-template-columns: 7.5rem 1fr;
+      align-items: center;
+      gap: 1rem;
+      padding: 1.2rem 0;
+    }
+    .stat__v {
+      font-size: 3rem;
+    }
+  }
+</style>

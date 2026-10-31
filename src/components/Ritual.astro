@@ -1,0 +1,135 @@
+---
+import type { ImageMetadata } from 'astro';
+import Photo from './Photo.astro';
+import { ritual } from '../data/site';
+import vega from '../assets/fotos/vega-retrato.jpg';
+import torcido from '../assets/fotos/torcido.jpg';
+import humidor from '../assets/fotos/humidor.jpg';
+import humo from '../assets/fotos/humo-perfil.jpg';
+import maridaje from '../assets/fotos/habano-mano.jpg';
+
+const imgs: Record<string, { src: ImageMetadata; alt: string; pos?: string }> = {
+  vega: { src: vega, alt: 'Alejandro entre plantas de tabaco bajo el tapado de una vega cubana', pos: '50% 35%' },
+  torcido: { src: torcido, alt: 'Alejandro examina una hoja de capa en una mesa de torcido', pos: '60% 50%' },
+  humidor: { src: humidor, alt: 'Humidor privado con cajas de habanos en estanterías de madera', pos: '50% 60%' },
+  humo: { src: humo, alt: 'Primer plano de un habano encendido y su humo', pos: '30% 50%' },
+  maridaje: { src: maridaje, alt: 'Habano sostenido en la mano junto a cócteles', pos: '50% 50%' },
+};
+---
+
+<section class="ritual" data-scene="ritual" aria-labelledby="ritual-title">
+  <div class="ritual__pin" data-hscroll>
+    <div class="ritual__track" data-hscroll-track>
+      <div class="ritual__intro">
+        <p class="eyebrow" data-reveal>El ritual</p>
+        <h2 id="ritual-title" class="ritual__title" data-split>Cinco tiempos,<br /> <em>un solo carácter</em></h2>
+        <p class="ritual__hint" data-reveal>Del terruño a la última calada.</p>
+      </div>
+      {
+        ritual.map((r, i) => {
+          const im = imgs[r.img];
+          return (
+            <article class="step" data-step>
+              <Photo src={im.src} alt={im.alt} position={im.pos} ratio="4 / 5" sizes="(max-width: 860px) 90vw, 360px" widths={[360, 540, 720]} class="step__img" />
+              <div class="step__text">
+                <span class="step__num">{String(i + 1).padStart(2, '0')}</span>
+                <h3 class="step__k">{r.k}</h3>
+                <p class="step__t">{r.t}</p>
+              </div>
+            </article>
+          );
+        })
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .ritual {
+    position: relative;
+  }
+  .ritual__pin {
+    overflow: hidden;
+  }
+  .ritual__track {
+    display: flex;
+    align-items: center;
+    gap: clamp(2rem, 4vw, 4rem);
+    min-height: 100svh;
+    padding: 6rem var(--gutter) 3rem;
+    width: max-content;
+  }
+  .ritual__intro {
+    width: min(520px, 80vw);
+    display: grid;
+    gap: 1rem;
+  }
+  .ritual__title {
+    font-size: clamp(2.6rem, 6vw, 5rem);
+  }
+  .ritual__title :global(em) {
+    color: var(--gold-2);
+  }
+  .ritual__hint {
+    color: var(--ink-dim);
+    margin: 0;
+  }
+  .step {
+    width: clamp(260px, 24vw, 360px);
+    display: grid;
+    gap: 1.2rem;
+  }
+  .step :global(.step__img) {
+    height: min(46vh, 450px);
+    width: 100%;
+    aspect-ratio: auto !important;
+  }
+  .step__text {
+    position: relative;
+    padding-top: 1rem;
+    border-top: 1px solid var(--line);
+  }
+  .step__num {
+    position: absolute;
+    right: 0;
+    top: -0.2em;
+    font-family: var(--serif);
+    font-size: clamp(3.5rem, 5vw, 5rem);
+    line-height: 1;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--gold);
+  }
+  .step__k {
+    font-size: clamp(1.8rem, 2.4vw, 2.4rem);
+    margin: 0 0 0.5rem;
+  }
+  .step__t {
+    color: var(--ink-dim);
+    margin: 0;
+    font-size: 0.95rem;
+    max-width: 30ch;
+  }
+
+  /* Móvil: lista vertical, sin pin */
+  @media (max-width: 860px) {
+    .ritual__track {
+      width: auto;
+      flex-direction: column;
+      align-items: stretch;
+      min-height: 0;
+      padding: 6rem var(--gutter) 4rem;
+      gap: 3rem;
+    }
+    .ritual__intro,
+    .step {
+      width: 100%;
+    }
+    .step :global(.step__img) {
+      height: auto;
+      aspect-ratio: 4 / 3 !important;
+    }
+    .step__t {
+      max-width: none;
+    }
+  }
+</style>

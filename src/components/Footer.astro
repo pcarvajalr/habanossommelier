@@ -1,0 +1,56 @@
+---
+import { site } from '../data/site';
+const year = new Date().getFullYear();
+---
+
+<footer class="footer">
+  <div class="wrap footer__inner">
+    <p class="footer__brand">Habanos <em>Sommelier</em></p>
+    <p class="footer__note">
+      Venta exclusiva para mayores de 18 años. Fumar es perjudicial para la salud.
+    </p>
+    <div class="footer__meta">
+      <a href={site.instagram} target="_blank" rel="noopener">Instagram {site.instagramHandle}</a>
+      <span>© {year} {site.person} · {site.name}</span>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    position: relative;
+    z-index: 2;
+    border-top: 1px solid var(--line);
+    background: var(--bg);
+    padding: 3rem 0 calc(2rem + env(safe-area-inset-bottom));
+  }
+  .footer__inner {
+    display: grid;
+    gap: 1.25rem;
+  }
+  .footer__brand {
+    font-family: var(--serif);
+    font-size: 1.6rem;
+    margin: 0;
+  }
+  .footer__brand em {
+    color: var(--gold);
+  }
+  .footer__note {
+    color: var(--ink-dim);
+    font-size: 0.85rem;
+    margin: 0;
+  }
+  .footer__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 2rem;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--ink-dim);
+  }
+  .footer__meta a {
+    color: var(--gold);
+    text-decoration: none;
+  }
+</style>

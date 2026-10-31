@@ -1,0 +1,167 @@
+---
+import Base from '../layouts/Base.astro';
+import Contact from '../components/Contact.astro';
+import Gallery from '../components/Gallery.astro';
+import Photo from '../components/Photo.astro';
+import retrato from '../assets/fotos/retrato-fumando.jpg';
+import { bio, site } from '../data/site';
+
+const values = [
+  { k: 'Paciencia', t: 'El tiempo es un ingrediente: en la guarda, en la cata y en cada conversación.' },
+  { k: 'Origen', t: 'Terruños, denominaciones de origen y procesos que explican cada aroma.' },
+  { k: 'Maestría', t: 'El respeto por el trabajo artesanal que hay detrás de cada habano.' },
+  { k: 'Equilibrio', t: 'La búsqueda constante de la armonía perfecta en cada maridaje.' },
+];
+---
+
+<Base title="Sobre mí" description={`${site.person}, ${site.role.toLowerCase()}. ${bio.paragraphs[0]}`}>
+  <section class="bio" data-scene="bio" aria-labelledby="bio-title">
+    <div class="wrap bio__grid">
+    <div class="bio__inner">
+      <p class="eyebrow" data-reveal data-intro data-delay="0.1">Sobre mí</p>
+      <h1 id="bio-title" class="bio__title" data-split data-intro transition:name="page-title">{site.person}</h1>
+      <p class="bio__role" data-reveal data-intro data-delay="0.5">{site.role}</p>
+      <p class="bio__lead" data-reveal data-intro data-delay="0.7">{bio.lead}</p>
+      {bio.paragraphs.map((p) => <p class="bio__p" data-reveal>{p}</p>)}
+      <p class="bio__closing" data-scrub-words>{bio.closing}</p>
+    </div>
+    <div class="bio__photo">
+      <Photo
+        src={retrato}
+        alt={`${site.person} fumando un habano, sentado en un salón con paredes de madera`}
+        ratio="2 / 3"
+        position="40% 30%"
+        sizes="(max-width: 860px) 92vw, 34vw"
+        widths={[400, 640, 851]}
+        eager
+      />
+    </div>
+    </div>
+  </section>
+
+  <Gallery />
+
+  <section class="values" data-scene="services" aria-labelledby="values-title">
+    <div class="wrap">
+      <p class="eyebrow" data-reveal>Principios</p>
+      <h2 id="values-title" class="values__title" data-split>Lo que guía <em>mi trabajo</em></h2>
+      <ol class="values__list">
+        {
+          values.map((v, i) => (
+            <li data-reveal data-delay={String(i * 0.08)}>
+              <span class="values__n">{String(i + 1).padStart(2, '0')}</span>
+              <h3>{v.k}</h3>
+              <p>{v.t}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <Contact />
+</Base>
+
+<style>
+  .bio {
+    padding: clamp(8rem, 16vw, 12rem) 0 clamp(5rem, 10vw, 8rem);
+  }
+  .bio__grid {
+    display: grid;
+    grid-template-columns: 1.25fr 0.85fr;
+    gap: clamp(2.5rem, 6vw, 6rem);
+    align-items: start;
+  }
+  .bio__inner {
+    display: grid;
+    gap: 1.2rem;
+  }
+  .bio__photo {
+    position: sticky;
+    top: 7rem;
+  }
+  @media (max-width: 860px) {
+    .bio__grid {
+      grid-template-columns: 1fr;
+    }
+    .bio__photo {
+      position: relative;
+      top: 0;
+      order: -1;
+      width: min(78%, 360px);
+      margin-top: 1rem;
+    }
+  }
+  .bio__title {
+    font-size: clamp(3.6rem, 13vw, 9rem);
+    line-height: 0.95;
+  }
+  .bio__role {
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--gold);
+    font-size: clamp(1.2rem, 1rem + 1vw, 1.7rem);
+    margin: 0;
+  }
+  .bio__lead {
+    font-family: var(--serif);
+    font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.5rem);
+    line-height: 1.2;
+    margin: 1.2rem 0 0.4rem;
+  }
+  .bio__p {
+    color: var(--ink-dim);
+    max-width: 60ch;
+    margin: 0;
+  }
+  .bio__closing {
+    font-family: var(--serif);
+    font-style: italic;
+    font-size: clamp(1.5rem, 1.1rem + 1.4vw, 2.2rem);
+    line-height: 1.25;
+    border-left: 1px solid var(--gold);
+    padding-left: 1.2rem;
+    margin: 1.6rem 0 0;
+  }
+  .values {
+    padding: clamp(5rem, 10vw, 8rem) 0;
+  }
+  .values__title {
+    font-size: clamp(2.6rem, 7vw, 5rem);
+    margin: 1rem 0 3rem;
+  }
+  .values__title :global(em) {
+    color: var(--gold-2);
+  }
+  .values__list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2.5rem 2rem;
+    max-width: 820px;
+  }
+  .values__list li {
+    border-top: 1px solid var(--line);
+    padding-top: 1.2rem;
+  }
+  .values__n {
+    font-family: var(--serif);
+    font-style: italic;
+    color: var(--gold);
+  }
+  .values__list h3 {
+    font-size: 2rem;
+    margin: 0.4rem 0 0.5rem;
+  }
+  .values__list p {
+    color: var(--ink-dim);
+    margin: 0;
+  }
+  @media (max-width: 640px) {
+    .values__list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
