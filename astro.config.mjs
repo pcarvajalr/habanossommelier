@@ -1,10 +1,8 @@
 // @ts-check
 import { defineConfig, fontProviders } from 'astro/config';
 
-// Dominio canónico. En Vercel se toma el dominio de producción del proyecto
-// (el personalizado si está conectado); fuera de Vercel, SITE_URL o el dominio propio.
-const vercelHost = process.env.VERCEL_PROJECT_PRODUCTION_URL;
-const site = process.env.SITE_URL || (vercelHost ? `https://${vercelHost}` : 'https://habanossommelier.com');
+// Dominio canónico (sin www). Se puede cambiar con la variable SITE_URL.
+const site = process.env.SITE_URL || 'https://habanossommelier.com';
 
 // Sitio estático: Vercel detecta Astro y publica `dist/` sin adaptador.
 export default defineConfig({
